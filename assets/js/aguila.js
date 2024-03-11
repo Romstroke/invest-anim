@@ -1,13 +1,12 @@
 import Animal from './animal.js';
 
-//CLASE LEON
-class Leon extends Animal {
+class Aguila extends Animal {
     constructor(nombre, edad, img, comentarios, sonido) {
         super(nombre, edad, img, comentarios, sonido)
     }
     //Cada método debe reproducir un audio con el sonido que emite cada animal.
-    rugir() {
+    chillar() {
     }
 }
 
-export default Leon;
+export default Aguila;

@@ -23,6 +23,10 @@
 
 import { datos } from './fetch.js';
 import Leon from './leon.js';
+import Lobo from './lobo.js';
+import Oso from './oso.js';
+import Serpiente from './serpiente.js';
+import Aguila from './aguila.js';
 
 //TOMAR VALOR DE INPUTS
 const selectAnimal = document.getElementById('animal');
@@ -32,19 +36,15 @@ const contenedorImagen = document.getElementById('preview'); //AQUI ES DODNE SE 
 const form = document.getElementById('form') // EVENTO SUBMIT
 const tabla = document.getElementById('Animales'); //TABLA QUE HAY QUE RELLENAR
 const audio = document.getElementById('player');
-console.log(audio)
 
 //variable global para no repetir el find
 let animalEncontrado = null;
 
 //Método addEventListener que detecta evento change, aplicado a selectAnimal, y 2do argumento función para aplicar imagen en preview
-selectAnimal.addEventListener('change', () => {
-    console.log(selectAnimal.value) //AQUI LLEGA EL VALOR DEL SELECT
-    // console.log(nombreIngresado)
-    console.log(datos)
+selectAnimal.addEventListener('change', () => { //AQUI LLEGA EL VALOR DEL SELECT
     //IMPRESION EN PREVIEW FORM
+    //metodo find ✔
     animalEncontrado = datos.animales.find(animal => animal.name === selectAnimal.value); //estoy guardando lo que retorna find, cuando se cumple la condición || undefined
-    console.log(animalEncontrado);
     const inyectado = `url('assets/imgs/${animalEncontrado.imagen}')`
     contenedorImagen.style.backgroundImage = inyectado;
     contenedorImagen.style.backgroundSize = 'cover';
@@ -52,31 +52,38 @@ selectAnimal.addEventListener('change', () => {
 
 //tengo que guardar los animales en un array
 let animalesInstanciados = [];
-console.log(animalesInstanciados)
 
 //FUNCION QUE INSTANCIA UN ANIMALES SEGUN SELECT
 //nombre, edad, img, comentarios, sonido
 function instanciarAnimal(valorSelect, edad, img, comentarios, sonido) {
 
     let nuevoAnimal = null;
-    // const nuevoAnimal = new Animal(valorSelect, edad, img, comentarios, sonido);
 
     switch (valorSelect) {
         case 'Leon':
             nuevoAnimal = new Leon(valorSelect, edad, img, comentarios, sonido);
             break;
+        case 'Lobo':
+            nuevoAnimal = new Lobo(valorSelect, edad, img, comentarios, sonido);
+            break;
+        case 'Oso':
+            nuevoAnimal = new Oso(valorSelect, edad, img, comentarios, sonido);
+            break;
+        case 'Serpiente':
+            nuevoAnimal = new Serpiente(valorSelect, edad, img, comentarios, sonido);
+            break;
+        case 'Aguila':
+            nuevoAnimal = new Aguila(valorSelect, edad, img, comentarios, sonido);
+            break;
     }
-    //usando metodo push ✔
+    //metodo push ✔
     animalesInstanciados.push(nuevoAnimal)
-    console.log('estoy fuera de los if :', animalesInstanciados)
 }
 
 //Evento submit formulario para agregar animal a tabla
 form.addEventListener('submit', (event) => {
     event.preventDefault();
-    console.log(selectAnimal.value)
-    console.log(selectEdad.value)
-    if (animalEncontrado === null) { //este deberia agarrarme de el animal encontrado o del valor quwe tiene el form por defetcto, q es mas correcto¡?¡¡?¡?¡?¡?¡??
+    if (animalEncontrado === null) { //selectAnimal.value === 'Seleccione un animal'
         alert('Debes seleccionar un animal');
         return;
     }
@@ -89,34 +96,33 @@ form.addEventListener('submit', (event) => {
         return;
     }
 
-    console.log(animalEncontrado);
-    console.log(typeof (selectAnimal.value)) //AQUI LLEGA EL VALOR DEL SELECT
-
+    //Instanciar animal luego de validar que estén rellenados los campos
     instanciarAnimal(selectAnimal.value, selectEdad.value, animalEncontrado.imagen, comentario.value, animalEncontrado.sonido) //AQUI SE LE PASAN LOS VALORES A LA FUNCION QUE GUARDA LOS ANIMALES instanciarAnimal
     //animalEncontrado.imagen despues en la tabla es img porquev ahi se esta refiriendo a la clase,aqui arriba al json
-    console.log(animalesInstanciados)
     let contenidoTabla = '';
-    // Iterar sobre el array de animales instanciados y generar la salida HTML para cada uno
+    // Iterar animalesInstanciados e imprimir en tabla
+    //metodo forEach ✔
     animalesInstanciados.forEach(animalInst => {
-        console.log(animalInst)
         contenidoTabla += `
         <div class="pe-1">
             <div class="pb-1">
                 <img src="assets/imgs/${animalInst.img}" class="rounded" alt="${animalInst.nombre}" width="100px" height="110px">
             </div>    
-            <button type="button" class="btn btn-secondary w-100" onclick="this.rugir('${animalInst.sonido}')">
+            // <button id="clickSonido" type="button" class="btn btn-secondary w-100">
                 <img src="assets/imgs/audio.svg" width="20px" height="20px">
             </button>
         </div>
     `;
     });
 
-    tabla.innerHTML = contenidoTabla; // Agregar el contenido generado a la tabla
+    tabla.innerHTML = contenidoTabla; 
+
+    //Limpiar formulario
     animalEncontrado = null; // para hacer el siguiente submit
-    // selectAnimal.value, selectEdad.value, animalEncontrado.imagen, comentario.value, animalEncontrado.sonido
+    // selectAnimal.value, selectEdad.value, animalEncontrado.imagen, comentario.value
     selectAnimal.value = 'Seleccione un animal';
     selectEdad.value = 'Seleccione un rango de años';
-    comentario.value = ""; 
+    comentario.value = "";
     const inyectado = "url('assets/imgs/lion.svg')";
     contenedorImagen.style.backgroundImage = inyectado;
     contenedorImagen.style.backgroundSize = 'contain';

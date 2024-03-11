@@ -33,13 +33,6 @@ class Animal {
         this._comentarios = nuevo_comentario;
     }
 
-    // rugir() {
-    //     audio.setAttribute("src", `"assets/sounds/${animalInst._sonido}"`)
-    //     // const audioElement = `assets/sounds/${this.sonido}`;
-    //     // console.log(audioElement)
-    //     audioElement.play();
-    // }
-
 }
 
 export default Animal;
