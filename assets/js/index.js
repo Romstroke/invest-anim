@@ -21,152 +21,108 @@
 //si el boton no reproduce audio
 //si no funciona el boton modal no importa
 
-// import Animal from './animal.js';
-
-//CLASE ANIMAL PADRE
-class Animal {
-    constructor(nombre, edad, img, comentarios, sonido) {
-        //DESPUES ESTAS PROPIEDADES TIENEN QUE SER PRIVADAS
-        this.nombre = nombre;
-        this.edad = edad;
-        this.img = img;
-        this.comentarios = comentarios;
-        this.sonido = sonido; //acceder al clickear cada sonido
-    }
-
-    get Nombre() {
-        return this.nombre;
-    }
-
-    get Edad() {
-        return this.edad;
-    }
-
-    get Img() {
-        return this.img;
-    }
-
-    get Comentarios() {   //tambien tiene un setter para cambiar comentario porque si es privado, necesito el getter también
-        return this.comentarios;
-    }
-
-    get Sonidos() {
-        return this.sonido;
-    }
-
-    set Comentarios(nuevo_comentario) {
-        this.comentarios = nuevo_comentario;
-    }
-
-}
-
-//CLASE LEON
-class Leon extends Animal {
-    constructor() {
-        super()
-    }
-    //Cada método debe reproducir un audio con el sonido que emite cada animal.
-    rugir() {
-        // ${audio.setAttribute("src", `"assets/sounds/${animalEncontrado.sonido}"`)}
-        const audioElement = `assets/sounds/${this.sonido}`;
-        console.log(audioElement)
-        audioElement.play();
-    }
-}
-
-console.log({ Leon })
-
-//FUNCION IIFE (también va en otro modulo)
-const animales = (() => {
-    // const url = "http://localhost:5500/animales.json";
-    const url = './animales.json'; //esta no funciona al correrla con node, la anterior si
-    const getData = async () => {
-        const res = await fetch(url);
-        const datos = await res.json(); // aqui llegan los datos: name, imagen, sonido
-        console.log(datos)
-        // rellenarImagen(datos)
-        return datos; // retornar datos
-    };
-    return { getData };
-})();
-
-const datos = await animales.getData() //guardar lo que retorna la función en una constante
-console.log('datos fuera de iife',datos) //tenemos los datos afuera
+import { datos } from './fetch.js';
+import Leon from './leon.js';
 
 //TOMAR VALOR DE INPUTS
 const selectAnimal = document.getElementById('animal');
 const selectEdad = document.getElementById('edad');
 const comentario = document.getElementById('comentarios');
 const contenedorImagen = document.getElementById('preview'); //AQUI ES DODNE SE IMPRIME LA IMG SEGUN SELECT
-const btnRegistrar = document.getElementById('btnRegistrar') // EVENTO CLICK
+const form = document.getElementById('form') // EVENTO SUBMIT
 const tabla = document.getElementById('Animales'); //TABLA QUE HAY QUE RELLENAR
 const audio = document.getElementById('player');
 console.log(audio)
 
+//variable global para no repetir el find
+let animalEncontrado = null;
+
+//Método addEventListener que detecta evento change, aplicado a selectAnimal, y 2do argumento función para aplicar imagen en preview
 selectAnimal.addEventListener('change', () => {
     console.log(selectAnimal.value) //AQUI LLEGA EL VALOR DEL SELECT
+    // console.log(nombreIngresado)
     console.log(datos)
     //IMPRESION EN PREVIEW FORM
-    const animalEncontrado = datos.animales.find(animal => animal.name === selectAnimal.value);
+    animalEncontrado = datos.animales.find(animal => animal.name === selectAnimal.value); //estoy guardando lo que retorna find, cuando se cumple la condición || undefined
     console.log(animalEncontrado);
-    const inyectado = `<img src="assets/imgs/${animalEncontrado.imagen}" width="150px" >`
-    contenedorImagen.innerHTML = inyectado;
-
-    //usar evento submit de formulario para mandarlo a la tabla
-    btnRegistrar.addEventListener('click', () => {
-        console.log(animalEncontrado.sonido);
-        console.log(animalesInstanciados)
-        let contenidoTabla = '';
-        // Iterar sobre el array de animales instanciados y generar la salida HTML para cada uno
-        animalesInstanciados.forEach(animalInst => {
-            contenidoTabla += `
-            <div>
-                <img src="assets/imgs/${animalInst.imagen}" alt="${animalInst.nombre}" width="150px">
-                <button class="btn btn-secondary btn-sm">
-                    <i class="fa-solid fa-volume-high"></i>
-                </button>
-            </div>
-        `;
-        });
-
-        tabla.innerHTML = contenidoTabla; // Agregar el contenido generado a la tabla
-    });
-
-    //EDAD ANIMAL
-    selectEdad.addEventListener('change', () => {
-        console.log(selectEdad.value);  //AQUI LLEGA EL VALOR DEL SELECT
-    });
-    
-    //COMENTARIO
-    comentario.addEventListener('input', () => {
-        console.log(comentario.value); //AQUI LLEGA EL VALOR DEL INPUT
-    });
-
-    console.log(typeof (selectAnimal.value)) //AQUI LLEGA EL VALOR DEL SELECT
-    instanciarAnimal(selectAnimal.value)
+    const inyectado = `url('assets/imgs/${animalEncontrado.imagen}')`
+    contenedorImagen.style.backgroundImage = inyectado;
+    contenedorImagen.style.backgroundSize = 'cover';
 });
-
-// //EDAD ANIMAL
-// selectEdad.addEventListener('change', () => {
-//     console.log(selectEdad.value);  //AQUI LLEGA EL VALOR DEL SELECT
-// });
-
-// //COMENTARIO
-// comentario.addEventListener('input', () => {
-//     console.log(comentario.value); //AQUI LLEGA EL VALOR DEL INPUT
-// });
 
 //tengo que guardar los animales en un array
 let animalesInstanciados = [];
+console.log(animalesInstanciados)
 
 //FUNCION QUE INSTANCIA UN ANIMALES SEGUN SELECT
 //nombre, edad, img, comentarios, sonido
 function instanciarAnimal(valorSelect, edad, img, comentarios, sonido) {
-    const nuevoAnimal = new Animal(valorSelect, edad, img, comentarios, sonido);
+
+    let nuevoAnimal = null;
+    // const nuevoAnimal = new Animal(valorSelect, edad, img, comentarios, sonido);
+
+    switch (valorSelect) {
+        case 'Leon':
+            nuevoAnimal = new Leon(valorSelect, edad, img, comentarios, sonido);
+            break;
+    }
     //usando metodo push ✔
     animalesInstanciados.push(nuevoAnimal)
     console.log('estoy fuera de los if :', animalesInstanciados)
 }
+
+//Evento submit formulario para agregar animal a tabla
+form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    console.log(selectAnimal.value)
+    console.log(selectEdad.value)
+    if (animalEncontrado === null) { //este deberia agarrarme de el animal encontrado o del valor quwe tiene el form por defetcto, q es mas correcto¡?¡¡?¡?¡?¡?¡??
+        alert('Debes seleccionar un animal');
+        return;
+    }
+    if (selectEdad.value === 'Seleccione un rango de años') {
+        alert('Debes seleccionar una edad');
+        return;
+    }
+    if (comentario.value === '') {
+        alert('Debes escribir un comentario');
+        return;
+    }
+
+    console.log(animalEncontrado);
+    console.log(typeof (selectAnimal.value)) //AQUI LLEGA EL VALOR DEL SELECT
+
+    instanciarAnimal(selectAnimal.value, selectEdad.value, animalEncontrado.imagen, comentario.value, animalEncontrado.sonido) //AQUI SE LE PASAN LOS VALORES A LA FUNCION QUE GUARDA LOS ANIMALES instanciarAnimal
+    //animalEncontrado.imagen despues en la tabla es img porquev ahi se esta refiriendo a la clase,aqui arriba al json
+    console.log(animalesInstanciados)
+    let contenidoTabla = '';
+    // Iterar sobre el array de animales instanciados y generar la salida HTML para cada uno
+    animalesInstanciados.forEach(animalInst => {
+        console.log(animalInst)
+        contenidoTabla += `
+        <div class="pe-1">
+            <div class="pb-1">
+                <img src="assets/imgs/${animalInst.img}" class="rounded" alt="${animalInst.nombre}" width="100px" height="110px">
+            </div>    
+            <button type="button" class="btn btn-secondary w-100" onclick="this.rugir('${animalInst.sonido}')">
+                <img src="assets/imgs/audio.svg" width="20px" height="20px">
+            </button>
+        </div>
+    `;
+    });
+
+    tabla.innerHTML = contenidoTabla; // Agregar el contenido generado a la tabla
+    animalEncontrado = null; // para hacer el siguiente submit
+    // selectAnimal.value, selectEdad.value, animalEncontrado.imagen, comentario.value, animalEncontrado.sonido
+    selectAnimal.value = 'Seleccione un animal';
+    selectEdad.value = 'Seleccione un rango de años';
+    comentario.value = ""; 
+    const inyectado = "url('assets/imgs/lion.svg')";
+    contenedorImagen.style.backgroundImage = inyectado;
+    contenedorImagen.style.backgroundSize = 'contain';
+});
+
+
 
 
 

@@ -1,31 +1,44 @@
+//CLASE ANIMAL PADRE
 class Animal {
     constructor(nombre, edad, img, comentarios, sonido) {
-        this.nombre = nombre;
-        this.edad = edad;
-        this.img = img;
-        this.comentarios = comentarios;
-        this.sonido = sonido; //acceder al clickear cada sonido
+        this._nombre = nombre;
+        this._edad = edad;
+        this._img = img;
+        this._comentarios = comentarios;
+        this._sonido = sonido; //acceder al clickear cada sonido
     }
 
-    get Nombre() {
-        return this.nombre;
+    //Poner los getter en mayúscula ralentiza el proceso de acceder al objeto
+    get nombre() {
+        return this._nombre;
     }
 
-    get Edad() {
-        return this.edad;
+    get edad() {
+        return this._edad;
     }
 
-    get Img() {
-        return this.img;
+    get img() {
+        return this._img;
     }
 
-    get Comentarios() {   //tambien tiene un setter para cambiar comentario
-        return this.comentarios;
+    get comentarios() {   //tambien tiene un setter para cambiar comentario porque si es privado, necesito el getter también
+        return this._comentarios;
     }
 
-    get Sonidos() {
-        return this.sonido;
+    get sonidos() {
+        return this._sonido;
     }
+
+    set comentarios(nuevo_comentario) {
+        this._comentarios = nuevo_comentario;
+    }
+
+    // rugir() {
+    //     audio.setAttribute("src", `"assets/sounds/${animalInst._sonido}"`)
+    //     // const audioElement = `assets/sounds/${this.sonido}`;
+    //     // console.log(audioElement)
+    //     audioElement.play();
+    // }
 
 }
 
