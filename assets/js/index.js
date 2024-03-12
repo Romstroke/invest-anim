@@ -102,7 +102,6 @@ form.addEventListener('submit', (event) => {
     // Iterar animalesInstanciados e imprimir en tabla
     //metodo forEach ✔
     animalesInstanciados.forEach((animalInst, index) => {
-        console.log(animalesInstanciados)
         contenidoTabla += `
         <div class="pe-1">
             <div class="pb-1">
@@ -127,7 +126,6 @@ form.addEventListener('submit', (event) => {
     
     // Agregar evento de clic a cada botón
     animalesInstanciados.forEach((animalInst, index) => {
-        console.log(animalInst.sonidos)
         const botonSonido = document.getElementById(`clickSonido_${index}`);
         botonSonido.addEventListener('click', () => {
             // alert('click');
