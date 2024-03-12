@@ -35,7 +35,6 @@ const comentario = document.getElementById('comentarios');
 const contenedorImagen = document.getElementById('preview'); //AQUI ES DODNE SE IMPRIME LA IMG SEGUN SELECT
 const form = document.getElementById('form') // EVENTO SUBMIT
 const tabla = document.getElementById('Animales'); //TABLA QUE HAY QUE RELLENAR
-const audio = document.getElementById('player');
 
 //variable global para no repetir el find
 let animalEncontrado = null;
@@ -83,7 +82,7 @@ function instanciarAnimal(valorSelect, edad, img, comentarios, sonido) {
 //Evento submit formulario para agregar animal a tabla
 form.addEventListener('submit', (event) => {
     event.preventDefault();
-    if (animalEncontrado === null) { //selectAnimal.value === 'Seleccione un animal'
+    if (!animalEncontrado) { //selectAnimal.value === 'Seleccione un animal' //animalEncontrado === null
         alert('Debes seleccionar un animal');
         return;
     }
@@ -102,20 +101,40 @@ form.addEventListener('submit', (event) => {
     let contenidoTabla = '';
     // Iterar animalesInstanciados e imprimir en tabla
     //metodo forEach ✔
-    animalesInstanciados.forEach(animalInst => {
+    animalesInstanciados.forEach((animalInst, index) => {
+        console.log(animalesInstanciados)
         contenidoTabla += `
         <div class="pe-1">
             <div class="pb-1">
                 <img src="assets/imgs/${animalInst.img}" class="rounded" alt="${animalInst.nombre}" width="100px" height="110px">
             </div>    
-            // <button id="clickSonido" type="button" class="btn btn-secondary w-100">
+             <button id="clickSonido_${index}" type="button" class="btn btn-secondary w-100">
                 <img src="assets/imgs/audio.svg" width="20px" height="20px">
             </button>
         </div>
     `;
+
+
     });
 
-    tabla.innerHTML = contenidoTabla; 
+    function reproducirSonido(sonido) {
+        const audio = document.getElementById('player');
+        audio.setAttribute("src", `./assets/sounds/${sonido}`)
+        audio.play();
+    }
+
+    tabla.innerHTML = contenidoTabla;
+    
+    // Agregar evento de clic a cada botón
+    animalesInstanciados.forEach((animalInst, index) => {
+        console.log(animalInst.sonidos)
+        const botonSonido = document.getElementById(`clickSonido_${index}`);
+        botonSonido.addEventListener('click', () => {
+            // alert('click');
+            reproducirSonido(animalInst.sonidos);
+        });
+    });
+
 
     //Limpiar formulario
     animalEncontrado = null; // para hacer el siguiente submit
